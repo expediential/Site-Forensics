@@ -15,8 +15,28 @@ Database: `browserscope-v1` in IndexedDB. Encryption at rest is provided by the 
 | `preferences` | key | retention, grants, theme, redaction, providers | until changed |
 | `rulePacks` | `[packId, version]` | signed data, verification/status | until removed |
 | `exports` | exportId | manifest only; no duplicate event copy | 24h max |
+| `investigations` | `investigationId` | immutable scope descriptor, recorder state, clock/coverage manifest, ledger root | policy-bound |
+| `graphNodes` | `[investigationId, nodeId]` | typed entity projection, first/last evidence IDs, safe label | regenerated |
+| `graphEdges` | `[investigationId, edgeId]` | typed relationship, source/target, basis, confidence, evidence IDs | regenerated |
+| `annotations` | `annotationId` | user pin/bookmark/comment, target event/node/edge, created time | policy-bound |
 
 Migrations are append-only and transactional. A failed migration leaves the prior DB untouched and disables collection with a recoverable diagnostic; it never drops user data automatically.
+
+### Investigation descriptor and ledger integrity
+
+```text
+Investigation = {
+  id, state: armed | recording | paused | frozen | deleted,
+  scope: current_tab | site_workspace | selected_tabs | browser_wide_lab,
+  target: { tabIds, allowedOrigins, includeSubframes },
+  requestedCapabilities, grantedCapabilities,
+  startedAt, stoppedAt, retentionPolicy,
+  rulePackManifest, collectorManifest,
+  coverageSummary, ledgerCheckpoint
+}
+```
+
+Each append batch records the previous batch hash, canonical event-byte hash, resulting hash, sequence range, and writer version. On freeze, the system saves an application-generated **integrity manifest** (hashes, not a cryptographic claim about hostile local actors). Edits are never made to event records. User comments, tags, bookmarks, and false-positive dispositions are annotations that reference events; they do not change evidence.
 
 ## 2. Event model
 
@@ -29,8 +49,9 @@ EventEnvelope = {
   sequence: bigint;
   observedAt: ISO8601;
   monotonicMs: number;
-  source: 'browser-network' | 'browser-cookie' | 'content-dom' |
+  source: 'browser-navigation' | 'browser-network' | 'browser-cookie' | 'browser-download' | 'content-dom' |
           'main-probe' | 'system' | 'user';
+  observationKind: 'direct' | 'instrumented' | 'derived' | 'user-annotated';
   evidenceGrade: 'direct' | 'derived' | 'heuristic' | 'user-asserted';
   privacyClass: 'public-metadata' | 'sensitive-metadata';
   frame: { documentId?: string; frameId?: number; origin?: CanonicalOrigin };
@@ -41,11 +62,15 @@ EventEnvelope = {
 }
 ```
 
+`url` is intentionally not a raw URL field. The payload receives `resourceRef = { scheme, registrableDomain, pathTemplate?, sessionSaltedUrlHash }`; queries, fragments, credential syntax, cookie/storage/body values, filenames, and page text are rejected at the ingestion gate. `tabId`, `windowId`, and `frameId` are stored only when supplied by the relevant source. Browser IDs are local-session references, not globally meaningful identifiers.
+
 Event kinds are intentionally behavioural, not raw logs:
 
 | Family | Kinds |
 |---|---|
 | System | `session_started`, `permission_changed`, `coverage_gap`, `collector_overflow`, `session_frozen` |
+| Investigation | `investigation_armed`, `recording_started`, `recording_paused`, `recording_resumed`, `recording_stopped`, `integrity_verified` |
+| Browser context | `tab_created`, `tab_closed`, `tab_activated`, `navigation_started`, `navigation_committed`, `navigation_completed`, `navigation_failed`, `history_state_updated` |
 | Document | `document_loaded`, `security_headers_observed`, `csp_policy_observed`, `iframe_observed`, `form_metadata_observed`, `script_resource_observed` |
 | Network | `request_started`, `request_redirected`, `response_headers_observed`, `request_completed`, `request_failed`, `connection_opened` |
 | Storage | `cookie_metadata_observed`, `cookie_changed`, `web_storage_key_changed`, `indexeddb_metadata_observed`, `cache_metadata_observed` |
@@ -53,6 +78,19 @@ Event kinds are intentionally behavioural, not raw logs:
 | Analysis | `finding_created`, `finding_resolved`, `posture_recomputed`, `ai_bundle_created`, `ai_answer_received` |
 
 `api_invoked` carries an enum such as `clipboard_read`, `geolocation_get_current_position`, `notification_request_permission`, `window_open`, `webassembly_instantiate`, or `webgl_context`. It never carries arguments, return values, stack traces, text, or binary data.
+
+### Event capability vocabulary
+
+No event name implies unsupported observation. Each kind declares one of four support classes:
+
+| Class | Meaning | Example |
+|---|---|---|
+| `BROWSER_DIRECT` | Browser API reports the fact for selected scope | navigation committed; network redirect; cookie metadata change |
+| `DOCUMENT_DIRECT` | Permitted content observer reads document lifecycle/structure | DOMContentLoaded; iframe element added |
+| `PROBE_BEST_EFFORT` | Main-world hook sees an API invocation after injection | `navigator.clipboard.readText` invocation |
+| `DERIVED_PATTERN` | Analyzer joins evidence; it is not an independent event | likely OAuth redirect sequence; fingerprinting pattern |
+
+The event details panel renders the support class, collector, capability needed, start-time coverage, and known blind spots. A missing `PROBE_BEST_EFFORT` event is never a negative signal.
 
 ## 3. Evidence and timeline
 
@@ -77,6 +115,18 @@ Aggregation rules:
 - Repeated mutation/API events collapse within a 500 ms window but preserve count and first/last event IDs.
 - Findings appear at the timestamp of their first supporting evidence, not the later rule-evaluation time.
 - `coverage_gap` entries are never collapsed under normal events and visually span their affected window.
+
+### Evidence graph
+
+The graph is a read model built from events, not a separate fact store or a Neo4j dependency. Nodes have safe, typed identities:
+
+```text
+Investigation | Window | Tab | Document | Frame | Origin | Resource | Request |
+CookieMetadata | StorageContainer | Script | Worker | PermissionAPI | Download |
+Finding | Annotation | CoverageGap
+```
+
+Edges are similarly constrained: `contains`, `navigated_to`, `embedded`, `requested`, `redirected_to`, `set_metadata`, `registered`, `created`, `invoked`, `supports`, `derived_from`, `related_by_time`, and `annotated_by`. Each edge has `basis`, `confidence`, `evidenceIds`, `firstSequence`, and `lastSequence`. Only `direct-reference` edges may be phrased as a direct relationship. `related_by_time` is visually distinct and never used as a risk-rule trigger by itself.
 
 ## 4. Risk/posture engine
 

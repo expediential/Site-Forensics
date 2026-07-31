@@ -10,7 +10,7 @@ Action popup
   Secondary: Data controls, settings
 
 Inspector (side panel where supported; full tab fallback)
-  Overview | Security | Privacy | Behaviour | Timeline | Evidence
+  Overview | Timeline | Evidence graph | Security | Privacy | Behaviour
   Search and filters
   Finding detail drawer
   Export / AI (opt-in) / delete controls
@@ -32,6 +32,9 @@ The popup deliberately does not contain every section. It answers “what can I 
 | Overflow | Show a coverage gap and which collector was sampled/stopped. |
 | No findings | “No configured findings in the observed window,” never “safe.” |
 | AI disabled/offline | Deterministic explanations remain available; explain no data leaves device. |
+| Investigation armed/recording | Prominent scope chip, elapsed time, capabilities, coverage health, pause/stop; “recording” never means complete. |
+| Investigation frozen | Immutable ledger badge, rule/collector versions, replay action, export and delete. |
+| Evidence replay | Play/pause/speed/cursor controls alter only the local projection; UI states plainly that pages are not replayed. |
 
 ### Visual language
 
@@ -44,6 +47,17 @@ Use quiet neutrals and one semantic accent per category. Red denotes a direct hi
 - Charts expose a data table and screen-reader summary.
 - Every finding follows: **Observed → why it may matter → common benign use → limits → evidence**.
 - Copy forbids “clean,” “safe,” “virus,” “stealing,” or causal claims without direct evidence.
+
+### Timeline-first investigation flow
+
+1. The popup shows one primary action: **Start investigation**. The default scope is Current tab and the panel makes extra capabilities opt-in.
+2. The recording header is compact: scope, duration, source health, stop. It does not show a running risk score as if it were a verdict.
+3. The timeline is the landing view: ordered event clusters, unmissable gaps, filters for direct/instrumented/derived evidence, and evidence expansion.
+4. Selecting an event opens a drawer with raw-safe metadata, source/capability/coverage, relationships, related findings, and user pin/comment controls.
+5. The graph is an alternate, queryable relationship projection; its default is a focused neighborhood around the selected event, not an unreadable global hairball.
+6. On Stop, a review screen explains what was recorded, what was not, and which conclusions are derived. “Replay” opens the frozen local ledger at time zero.
+
+Search, zoom, grouping, filters, bookmarks, pins, comments, related events, time ranges, multi-tab view, and export belong to the inspector—not the popup. Comments are local annotations; bookmarks/pins never alter evidence or score.
 
 ## 3. Phased roadmap
 

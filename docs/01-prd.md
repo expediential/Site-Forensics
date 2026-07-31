@@ -1,7 +1,7 @@
 # BrowserScope — Product Requirements Document
 
 **Version:** 0.1  
-**Product position:** a local-first evidence viewer that helps people understand browser-visible site behaviour. It is not an antivirus, a guarantee of safety, or a replacement for browser protections.
+**Product position:** a local-first evidence recorder and viewer that answers “What actually happened in my browser during this investigation?” It is not an antivirus, a guarantee of safety, a complete browser audit log, or a replacement for browser protections.
 
 ## Problem and target users
 
@@ -11,11 +11,12 @@ Primary users are privacy-conscious everyday users and technically literate user
 
 ## Goals
 
-1. Explain observable site behaviour in plain language, tied to a timestamped evidence item.
-2. Keep passive inspection bounded and local; make deeper collection explicit.
-3. Help users distinguish normal integration behaviour from concrete unsafe configuration.
-4. Make uncertainty, collection scope, permission state, and unsupported features visible.
-5. Provide an export that is safe to share by default.
+1. Record observable, privacy-minimized browser activity as immutable, attributable evidence.
+2. Make a filterable timeline and relationship graph the primary investigation experience.
+3. Derive every finding, posture statement, report, and AI explanation from the event ledger.
+4. Keep recording bounded and local; make scope escalation and deeper collection explicit.
+5. Make uncertainty, collection scope, permission state, gaps, and unsupported features visible.
+6. Provide a redacted, safe-to-share investigation export by default.
 
 ## Non-goals
 
@@ -24,6 +25,7 @@ Primary users are privacy-conscious everyday users and technically literate user
 - Blocking traffic, changing pages, or acting as an ad/tracker blocker.
 - Analysing operating-system security, browser binaries, or other extensions’ code.
 - Silent all-history monitoring, fingerprinting users, or cloud collection by default.
+- Recording clicks, keys, form values, clipboard contents, browser UI activity, other-extension traffic, or a replayable copy of a page.
 
 ## Product principles
 
@@ -42,6 +44,10 @@ The user opens the action popup. It shows the canonical site name, collection st
 ### 2. Deep inspection
 
 The user selects Deep scan and accepts only the required capability cards. A session starts, a discreet in-page indicator is optional, and the side panel opens. The live timeline fills with normalized events. The user can pause or stop; stopping freezes the session and removes probe listeners.
+
+### 2a. Investigation recorder
+
+The user presses **Start investigation**, confirms scope (Current tab by default), duration/retention, and optional data sources. BrowserScope records only the selected scope and shows a persistent recording state. On Stop, the immutable ledger freezes; it then derives a timeline, graph, findings, posture explanation, and report. The user may reopen it in Evidence replay, but nothing is re-executed or fetched.
 
 ### 3. Understand a finding
 
@@ -69,6 +75,9 @@ The user enables AI, sees the redacted evidence bundle, provider, retention stat
 | PRD-08 | Explainable posture | Must | No binary “safe”; category scores explain weights and uncertainty. |
 | PRD-09 | Data controls and export | Must | Local retention, deletion, redacted JSON export, and AI/enrichment disclosure are available. |
 | PRD-10 | Accessibility/theme | Must | Keyboard operation, reduced-motion support, AA contrast, dark/light/system themes. |
+| PRD-11 | Investigation recorder | Must | Start/stop produces a scoped event ledger, coverage report, derived timeline and graph, and local report. |
+| PRD-12 | Evidence replay | Should | A deterministic cursor replays stored events and projections without network/page execution. |
+| PRD-13 | Analyzer modules | Must | Built-in analyzers emit structured candidates/findings only; no analyzer writes UI state. |
 
 ## Success measures and guardrails
 

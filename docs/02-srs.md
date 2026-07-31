@@ -27,6 +27,13 @@ Inputs from a page, browser event APIs, optional feeds, and AI providers are unt
 | FR-15 | Remote enrichment and AI shall be disabled by default, separately consented, cancellable, and supplied only a versioned redacted bundle. |
 | FR-16 | A remote answer shall identify the evidence IDs it used. It shall be labelled generated analysis and be stored separately from primary evidence. |
 | FR-17 | The system shall not execute remotely retrieved code, rule expressions, plugin code, or model-provided instructions. |
+| FR-18 | The system shall require an explicit Investigation descriptor: scope, selected tab IDs/origins, capabilities, started/ended timestamps, retention, and rule-pack versions. It shall not widen scope after start. |
+| FR-19 | The system shall write an append-only event envelope before any derived finding, aggregate, graph edge, report, or AI bundle references it. Derived artifacts shall retain input event IDs and algorithm/rule versions. |
+| FR-20 | The system shall classify every event as `direct`, `instrumented`, `derived`, or `user-annotated`; source completeness and late-start status shall be visible in the event and session coverage model. |
+| FR-21 | The system shall maintain a causality graph as derived, typed edges with a basis (`direct-reference`, `temporal-correlation`, `rule-inference`, or `user-link`). It shall not represent temporal adjacency as causation. |
+| FR-22 | The system shall implement replay as a pure read operation over a frozen investigation snapshot. Replay shall make no page, browser, provider, or AI network request. |
+| FR-23 | Built-in analyzer modules shall consume normalized event batches and return schema-validated observations/finding candidates. They shall have no access to browser APIs, UI stores, raw page objects, or direct persistence. |
+| FR-24 | The system shall create a `coverage_gap` event whenever a source was unavailable, permission was denied/revoked, a document was late-attached, sampling/overflow occurred, or a browser API does not support requested visibility. |
 
 ## 3. Non-functional requirements
 
@@ -51,6 +58,7 @@ Inputs from a page, browser event APIs, optional feeds, and AI providers are unt
 - NFR-R3: Deep scan samples mutation bursts, coalesces equivalent events, has per-kind rate limits, and never computes hashes/parses source on the page main thread.
 - NFR-R4: The service worker must resume a session from IndexedDB/storage checkpoints after termination without relying on globals. Chrome documents that MV3 service workers are short-lived. [Chrome guidance](https://developer.chrome.com/docs/extensions/get-started/tutorial/service-worker-events)
 - NFR-R5: UI lists are virtualized and timeline aggregation is done in a worker when supported.
+- NFR-R6: Investigation writes use bounded append batches and a hash chain/checkpoint manifest. Integrity verification detects local corruption or accidental mutation; it is not presented as protection against a user or malware controlling the browser profile.
 
 ### Compatibility and accessibility
 

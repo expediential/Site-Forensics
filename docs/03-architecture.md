@@ -29,6 +29,30 @@ The service worker is the authority for sessions, capability state, normalizatio
 
 `chrome.debugger` is deliberately outside the core data flow. It may become an Advanced capability adapter only after dedicated UX and platform review. The API attaches a DevTools Protocol client to a tab and requires the `debugger` permission; it is therefore materially more sensitive than passive metadata collection. [Chrome debugger](https://developer.chrome.com/docs/extensions/reference/api/debugger)
 
+## 2a. Evidence-event pipeline (revision 2)
+
+```mermaid
+flowchart LR
+  Sources["Collectors\nBrowser / isolated DOM / bounded probe"] --> Gate["Ingestion gate\nschema • scope • minimization • dedupe"]
+  Gate --> Ledger[("Append-only evidence ledger")]
+  Ledger --> Analyzers["Built-in analyzer modules"]
+  Analyzers --> Findings["Finding candidates"]
+  Ledger --> Graph["Derived evidence graph"]
+  Findings --> Risk["Explainable posture engine"]
+  Ledger --> Replay["Evidence replay projector"]
+  Graph --> Replay
+  Risk --> Views["Timeline • report • AI bundle • UI"]
+  Replay --> Views
+```
+
+The ingestion gate is the sole writer of primary events. It performs source-specific validation, scope/permission check, prohibited-field stripping, canonicalization, source-time normalization, and idempotency. The ledger is append-only after a session freezes. Derived state is deliberately disposable and regenerable from a frozen ledger plus versioned rules.
+
+### Built-in analyzer boundary
+
+Analyzers are compiled, first-party modules satisfying a narrow contract: `accept(event batch, read-only investigation context) → observations, finding candidates, graph-edge candidates`. They cannot call `chrome.*`, make HTTP requests, mutate UI state, persist records, or inspect raw page objects. An `AnalyzerHost` budgets execution time and event count, validates output, and attaches evidence IDs before persistence.
+
+Initial modules are Navigation, Network, Header/CSP, DOM Metadata, Cookie Metadata, Storage Metadata, Permission/API Invocation, Worker/Service Worker, Fingerprinting Pattern, and OAuth Pattern. “Extension Analyzer,” Accessibility, and Performance are deferred: their names imply unsupported/broader collection and must first define measurable evidence and permissions.
+
 ## 3. Session state machine
 
 ```mermaid

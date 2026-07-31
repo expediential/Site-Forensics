@@ -9,6 +9,43 @@ BrowserScope should be built as a **local-first, user-initiated web-behaviour in
 
 The product must say **observed**, **not observed**, or **not inspectable**. It must never turn a lack of telemetry into a safety claim.
 
+## Revision 2 — evidence-recorder position
+
+BrowserScope evolves from a page scanner into an **evidence-based browser observability platform**. Its central object is an Investigation: a deliberate, bounded recording session that produces an immutable event ledger, a derived relationship graph, and evidence-led summaries. Risk, AI, reports, and UI are consumers of that ledger; none may invent primary evidence.
+
+“Flight recorder” is a useful product metaphor but must not become a false completeness claim. A browser extension cannot record browser-internal, OS, other-extension, blocked/restricted-page, or pre-collection activity. The product name for the capability is therefore **Investigation recorder**, and every view exposes its scope and coverage.
+
+### Investigation scope tiers
+
+| Tier | User selects | Data boundary | Decision |
+|---|---|---|---|
+| Current tab (default) | one tab, now | active-tab/document observations from start onward | MVP |
+| Site workspace | selected tabs on one site | explicitly granted host(s), selected tab navigation/network facts | 1.5 |
+| Multi-tab investigation | user-selected tabs | only those tab IDs and permitted origins | 2.0 |
+| Browser-wide laboratory recorder | all normal-profile tabs for a stated duration | requires broad host, `tabs`, `webNavigation`, and network permissions; captures a highly sensitive browsing ledger | research-only, disabled in store builds until privacy review |
+
+Browser-wide activity cannot be implemented quietly or with `activeTab`: reading sensitive tab URL/title fields needs `tabs` or host access, and navigation lifecycle needs `webNavigation`. [Chrome tabs](https://developer.chrome.com/docs/extensions/reference/api/tabs) [Chrome webNavigation](https://developer.chrome.com/docs/extensions/reference/api/webNavigation)
+
+### New feasibility corrections
+
+| Requested recorder event | Accurate product promise |
+|---|---|
+| Page load / navigation / redirect / SPA history change | Direct browser navigation evidence when `webNavigation` is granted; event ordering relative to network events is not guaranteed, so relationships carry confidence rather than fabricated total order. |
+| DOMContentLoaded / window load / DOM ready | Direct for documents with a permitted content observer. BFCache restoration may not emit DOMContentLoaded, so use lifecycle evidence and report the gap. |
+| Cookie change | Direct metadata event with `cookies` and host permission. “Cookie access/read” by page code is probe-observed only and may be evaded/missed. |
+| IndexedDB / cache updated | “API call or metadata observed” only; no universal browser event fires for every record/cache mutation. Values and records remain excluded. |
+| Download started/finished | Possible only with separate `downloads` permission, and the API is browser-wide. Associate with a tab only when browser metadata supplies one; retain no filename/path by default. [Chrome downloads](https://developer.chrome.com/docs/extensions/reference/api/downloads) |
+| Certificate error | Do not promise this as a browser-security verdict. A navigation failure may expose a generic network error, but blocked interstitial/restricted behaviour and certificate UI are browser-owned. Report `navigation failed (browser error exposed)` only. |
+| OAuth / Google / GitHub / Discord login | Never infer a login from a username/password form. Detect only an observed redirect/callback pattern matching a packaged provider descriptor; label `possible OAuth flow` with confidence. |
+| Wallet/provider interaction | Detect a bounded, opt-in probe event such as provider object/API invocation after probe start. Never read accounts, balances, signatures, transaction data, or messages. |
+| Extension message / content script injected | The extension can record its **own** injection/message lifecycle. It cannot inspect other extensions’ messages or reliably enumerate their content scripts. |
+| “User actions” | Not a general event class. Do not record clicks, keystrokes, form values, focus, clipboard content, or browsing intent. A direct page API event may be marked `user-gesture-correlated` only if the probe receives a same-turn trusted gesture signal; it is not proof of who acted. |
+| CSP violation | A page-level `securitypolicyviolation` observation can be captured in eligible documents after probe start. CSP report requests and browser enforcement outside the document are not complete coverage. |
+
+### Replay correction
+
+BrowserScope will implement **evidence replay**, not page replay. It replays the stored event order, graph state, aggregate counters, and contemporaneous summaries. It does not rerun JavaScript, reload URLs, recreate DOM/video/network responses, restore login state, or claim causality. This protects users and makes replay deterministic.
+
 ### Selected technology choices
 
 | Decision | Alternatives considered | Choice and reason |
