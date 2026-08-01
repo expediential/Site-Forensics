@@ -18,17 +18,17 @@ Invariants:
 
 Collectors are first-party adapters. They declare a capability, scope support, emitted event kinds, privacy contract, rate budget, and browser support matrix before registration. They do not create findings.
 
-| Collector | Direct output | Scope/permission | Important limitation |
-|---|---|---|---|
-| Navigation | before/commit/complete/fail, SPA history and fragment update | `webNavigation`; selected permitted tabs | Browser network and navigation event ordering is explicitly undefined; BFCache changes lifecycle. |
-| Network metadata | lifecycle, resource class, origin, redirect, status/header facts | `webRequest` + hosts | No response body; no comprehensive final headers; not an intent detector. |
-| Document lifecycle | DOM ready/load, meta/iframe/script/form structural metadata | content script + host | Starts after injection; no restricted frames/pages; no content/values. |
-| DOM summary | coalesced structural mutation events | content script + host | May be high volume; sampled/coalesced; no innerHTML/text. |
-| Main-world API probe | selected API invocation facts | explicit deep scan + host | Best effort from injection onward; page can evade/interfere; no arguments/return values. |
-| Cookie metadata | set/change/removal and attributes | `cookies` + hosts | Does not prove page read/access; values discarded. |
-| Storage metadata | names/key-change metadata/API calls | eligible document or probe | No universal IndexedDB/cache mutation feed; no stored values. |
-| Download metadata | started/state/danger classification | `downloads`, separately consented | Browser-wide capability; no filename/path retained by default. |
-| Tab context | selected-tab open/close/activation only | `tabs` for sensitive tab fields | Never silently expands to all browser activity. |
+| Collector            | Direct output                                                    | Scope/permission                         | Important limitation                                                                              |
+| -------------------- | ---------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Navigation           | before/commit/complete/fail, SPA history and fragment update     | `webNavigation`; selected permitted tabs | Browser network and navigation event ordering is explicitly undefined; BFCache changes lifecycle. |
+| Network metadata     | lifecycle, resource class, origin, redirect, status/header facts | `webRequest` + hosts                     | No response body; no comprehensive final headers; not an intent detector.                         |
+| Document lifecycle   | DOM ready/load, meta/iframe/script/form structural metadata      | content script + host                    | Starts after injection; no restricted frames/pages; no content/values.                            |
+| DOM summary          | coalesced structural mutation events                             | content script + host                    | May be high volume; sampled/coalesced; no innerHTML/text.                                         |
+| Main-world API probe | selected API invocation facts                                    | explicit deep scan + host                | Best effort from injection onward; page can evade/interfere; no arguments/return values.          |
+| Cookie metadata      | set/change/removal and attributes                                | `cookies` + hosts                        | Does not prove page read/access; values discarded.                                                |
+| Storage metadata     | names/key-change metadata/API calls                              | eligible document or probe               | No universal IndexedDB/cache mutation feed; no stored values.                                     |
+| Download metadata    | started/state/danger classification                              | `downloads`, separately consented        | Browser-wide capability; no filename/path retained by default.                                    |
+| Tab context          | selected-tab open/close/activation only                          | `tabs` for sensitive tab fields          | Never silently expands to all browser activity.                                                   |
 
 ## 3. Ingestion pipeline
 
@@ -79,19 +79,19 @@ It may not open a page, use `fetch`, inspect browser APIs, make UI calls, attach
 
 ### Analyzer catalogue and status
 
-| Analyzer | Initial status | Output example |
-|---|---|---|
-| Navigation / Redirect | MVP | redirect chain backed by request/navigation IDs |
-| Network / third party | MVP | grouped external origin summary |
-| Header / CSP | MVP | observed header posture / explicit policy issue |
-| DOM metadata | MVP | hidden iframe or dynamic script structural observation |
-| Cookie metadata | 1.5 | attribute posture, change timeline |
-| Storage metadata | 1.5 | metadata container/key-change summary |
-| Permission/API invocation | 2.0 | API invoked after probe installation |
-| Fingerprinting pattern | 2.0 | multi-signal, confidence-bound pattern |
-| OAuth pattern | 2.0 | possible provider redirect flow, not login proof |
-| Accessibility / performance | research | must define product-specific evidence and budget first |
-| Other-extension analyzer | rejected | ordinary extensions cannot safely inspect other extension code/messages/traffic |
+| Analyzer                    | Initial status | Output example                                                                  |
+| --------------------------- | -------------- | ------------------------------------------------------------------------------- |
+| Navigation / Redirect       | MVP            | redirect chain backed by request/navigation IDs                                 |
+| Network / third party       | MVP            | grouped external origin summary                                                 |
+| Header / CSP                | MVP            | observed header posture / explicit policy issue                                 |
+| DOM metadata                | MVP            | hidden iframe or dynamic script structural observation                          |
+| Cookie metadata             | 1.5            | attribute posture, change timeline                                              |
+| Storage metadata            | 1.5            | metadata container/key-change summary                                           |
+| Permission/API invocation   | 2.0            | API invoked after probe installation                                            |
+| Fingerprinting pattern      | 2.0            | multi-signal, confidence-bound pattern                                          |
+| OAuth pattern               | 2.0            | possible provider redirect flow, not login proof                                |
+| Accessibility / performance | research       | must define product-specific evidence and budget first                          |
+| Other-extension analyzer    | rejected       | ordinary extensions cannot safely inspect other extension code/messages/traffic |
 
 ## 6. Findings and explainability contract
 

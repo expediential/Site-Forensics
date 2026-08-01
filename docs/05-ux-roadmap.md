@@ -22,19 +22,19 @@ The popup deliberately does not contain every section. It answers “what can I 
 
 ### States that must be designed, not hidden
 
-| State | UI response |
-|---|---|
-| No site permission | Explain the exact host access needed; offer the smallest grant. |
-| Restricted/unsupported page | `This page cannot be inspected by extensions` plus browser-provided reason where known; no misleading empty score. |
-| Passive only | Show what was and was not collected; Deep scan is a capability-expanding action. |
-| Deep scan live | Live timer, pause/stop, event rate, collector health, and an unobtrusive active indicator. |
-| Late scan | Show “Events before HH:MM:SS are not covered.” |
-| Overflow | Show a coverage gap and which collector was sampled/stopped. |
-| No findings | “No configured findings in the observed window,” never “safe.” |
-| AI disabled/offline | Deterministic explanations remain available; explain no data leaves device. |
-| Investigation armed/recording | Prominent scope chip, elapsed time, capabilities, coverage health, pause/stop; “recording” never means complete. |
-| Investigation frozen | Immutable ledger badge, rule/collector versions, replay action, export and delete. |
-| Evidence replay | Play/pause/speed/cursor controls alter only the local projection; UI states plainly that pages are not replayed. |
+| State                         | UI response                                                                                                        |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| No site permission            | Explain the exact host access needed; offer the smallest grant.                                                    |
+| Restricted/unsupported page   | `This page cannot be inspected by extensions` plus browser-provided reason where known; no misleading empty score. |
+| Passive only                  | Show what was and was not collected; Deep scan is a capability-expanding action.                                   |
+| Deep scan live                | Live timer, pause/stop, event rate, collector health, and an unobtrusive active indicator.                         |
+| Late scan                     | Show “Events before HH:MM:SS are not covered.”                                                                     |
+| Overflow                      | Show a coverage gap and which collector was sampled/stopped.                                                       |
+| No findings                   | “No configured findings in the observed window,” never “safe.”                                                     |
+| AI disabled/offline           | Deterministic explanations remain available; explain no data leaves device.                                        |
+| Investigation armed/recording | Prominent scope chip, elapsed time, capabilities, coverage health, pause/stop; “recording” never means complete.   |
+| Investigation frozen          | Immutable ledger badge, rule/collector versions, replay action, export and delete.                                 |
+| Evidence replay               | Play/pause/speed/cursor controls alter only the local projection; UI states plainly that pages are not replayed.   |
 
 ### Visual language
 
@@ -61,13 +61,13 @@ Search, zoom, grouping, filters, bookmarks, pins, comments, related events, time
 
 ## 3. Phased roadmap
 
-| Phase | Scope | Explicit exclusions / exit gate |
-|---|---|---|
-| 0 — Foundations | WXT/TS/React project, capability adapter, schema contracts, IndexedDB/migrations, permission UX, test harness, design tokens | No collectors until threat-model and redaction tests are approved. |
-| 1 — Trustworthy MVP | Current-tab manual scan; document/security-header/script/iframe metadata; network metadata; local events/findings; popup + inspector tab; timeline/search; data deletion/redacted export | No cookie values, no main-world probe, no reputation/AI, no all-sites default. Ship only after Chrome/Edge performance and restricted-page tests. |
-| 1.5 — Consent-based depth | Cookie metadata, per-site passive mode, side-panel progressive enhancement, DOM summary observer, posture coverage, retention settings | No debugger/CDP; no remote service. Revalidate permissions/store copy. |
-| 2.0 — Advanced evidence | Time-bounded main-world runtime probe, IndexedDB/cache metadata summaries, signed rule packs, optional domain reputation, optional remote AI with REB preview, Firefox capability build | CDP remains experimental behind explicit Advanced mode. Firefox release requires separate parity matrix, not full feature parity. |
-| Later research | Enterprise policy deployment, local on-device model, analyst export format, debugger/CDP investigation mode | Requires fresh privacy/security review, user research, and target-browser compatibility testing. |
+| Phase                     | Scope                                                                                                                                                                                    | Explicit exclusions / exit gate                                                                                                                   |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 — Foundations           | WXT/TS/React project, capability adapter, schema contracts, IndexedDB/migrations, permission UX, test harness, design tokens                                                             | No collectors until threat-model and redaction tests are approved.                                                                                |
+| 1 — Trustworthy MVP       | Current-tab manual scan; document/security-header/script/iframe metadata; network metadata; local events/findings; popup + inspector tab; timeline/search; data deletion/redacted export | No cookie values, no main-world probe, no reputation/AI, no all-sites default. Ship only after Chrome/Edge performance and restricted-page tests. |
+| 1.5 — Consent-based depth | Cookie metadata, per-site passive mode, side-panel progressive enhancement, DOM summary observer, posture coverage, retention settings                                                   | No debugger/CDP; no remote service. Revalidate permissions/store copy.                                                                            |
+| 2.0 — Advanced evidence   | Time-bounded main-world runtime probe, IndexedDB/cache metadata summaries, signed rule packs, optional domain reputation, optional remote AI with REB preview, Firefox capability build  | CDP remains experimental behind explicit Advanced mode. Firefox release requires separate parity matrix, not full feature parity.                 |
+| Later research            | Enterprise policy deployment, local on-device model, analyst export format, debugger/CDP investigation mode                                                                              | Requires fresh privacy/security review, user research, and target-browser compatibility testing.                                                  |
 
 ## 4. Implementation sequence
 

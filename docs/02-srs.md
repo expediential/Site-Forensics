@@ -8,32 +8,32 @@ Inputs from a page, browser event APIs, optional feeds, and AI providers are unt
 
 ## 2. Functional requirements
 
-| ID | Requirement |
-|---|---|
-| FR-01 | The system shall create a unique scan session bound to `tabId`, top-level document ID/origin, start time, requested capabilities, and rule-set version. |
-| FR-02 | The system shall reject events whose tab, document, session token, schema version, or sequence constraints do not match the active session. |
-| FR-03 | The system shall normalize browser observations into immutable events with a source, evidence grade, privacy classification, and monotonic sequence number. |
-| FR-04 | The system shall maintain per-session network request state keyed by browser request ID and write a terminal event on completion, error, or known redirect. |
+| ID    | Requirement                                                                                                                                                                                                                                                                |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-01 | The system shall create a unique scan session bound to `tabId`, top-level document ID/origin, start time, requested capabilities, and rule-set version.                                                                                                                    |
+| FR-02 | The system shall reject events whose tab, document, session token, schema version, or sequence constraints do not match the active session.                                                                                                                                |
+| FR-03 | The system shall normalize browser observations into immutable events with a source, evidence grade, privacy classification, and monotonic sequence number.                                                                                                                |
+| FR-04 | The system shall maintain per-session network request state keyed by browser request ID and write a terminal event on completion, error, or known redirect.                                                                                                                |
 | FR-05 | The system shall retain only an allowlist of response/request header facts: transport/security policy, content type, content length, redirect location origin, and cache fact where exposed. It shall not persist authorization, cookie, proxy-auth, or arbitrary headers. |
-| FR-06 | The system shall never collect form values, typed text, clipboard contents, cookie values, URL fragments, URL query values, request bodies, response bodies, WebSocket/SSE message contents, or storage values. |
-| FR-07 | The system shall store page and frame origins as canonicalized URLs; displayed and exported forms shall default to registrable domains plus path templates. |
-| FR-08 | The system shall describe DOM changes by bounded metadata (operation, tag, attributes from an allowlist, visibility classification, frame, and count) and never innerHTML/text content. |
-| FR-09 | The system shall explicitly record collection gaps: unsupported browser capability, missing permission, late injection, restricted URL, quota pressure, and collector shutdown. |
-| FR-10 | A finding shall include stable rule ID/version, severity, confidence, evidence IDs, explanation template parameters, and supersession status. A finding with no evidence IDs shall not render. |
-| FR-11 | The risk engine shall calculate independent category posture values and a confidence/coverage value. It shall not output `safe`, `malicious`, or a probability of compromise. |
-| FR-12 | Search and filtering shall execute locally over the selected session; full-text indexes shall exclude sensitive fields by schema, not by UI convention. |
-| FR-13 | Data deletion shall support session, site, and all-local-data scopes and shall delete associated events, findings, artifacts, indexes, and AI drafts. |
-| FR-14 | Export shall pass a redaction transform, validate against an export schema, and show a deterministic data preview. |
-| FR-15 | Remote enrichment and AI shall be disabled by default, separately consented, cancellable, and supplied only a versioned redacted bundle. |
-| FR-16 | A remote answer shall identify the evidence IDs it used. It shall be labelled generated analysis and be stored separately from primary evidence. |
-| FR-17 | The system shall not execute remotely retrieved code, rule expressions, plugin code, or model-provided instructions. |
-| FR-18 | The system shall require an explicit Investigation descriptor: scope, selected tab IDs/origins, capabilities, started/ended timestamps, retention, and rule-pack versions. It shall not widen scope after start. |
-| FR-19 | The system shall write an append-only event envelope before any derived finding, aggregate, graph edge, report, or AI bundle references it. Derived artifacts shall retain input event IDs and algorithm/rule versions. |
-| FR-20 | The system shall classify every event as `direct`, `instrumented`, `derived`, or `user-annotated`; source completeness and late-start status shall be visible in the event and session coverage model. |
-| FR-21 | The system shall maintain a causality graph as derived, typed edges with a basis (`direct-reference`, `temporal-correlation`, `rule-inference`, or `user-link`). It shall not represent temporal adjacency as causation. |
-| FR-22 | The system shall implement replay as a pure read operation over a frozen investigation snapshot. Replay shall make no page, browser, provider, or AI network request. |
-| FR-23 | Built-in analyzer modules shall consume normalized event batches and return schema-validated observations/finding candidates. They shall have no access to browser APIs, UI stores, raw page objects, or direct persistence. |
-| FR-24 | The system shall create a `coverage_gap` event whenever a source was unavailable, permission was denied/revoked, a document was late-attached, sampling/overflow occurred, or a browser API does not support requested visibility. |
+| FR-06 | The system shall never collect form values, typed text, clipboard contents, cookie values, URL fragments, URL query values, request bodies, response bodies, WebSocket/SSE message contents, or storage values.                                                            |
+| FR-07 | The system shall store page and frame origins as canonicalized URLs; displayed and exported forms shall default to registrable domains plus path templates.                                                                                                                |
+| FR-08 | The system shall describe DOM changes by bounded metadata (operation, tag, attributes from an allowlist, visibility classification, frame, and count) and never innerHTML/text content.                                                                                    |
+| FR-09 | The system shall explicitly record collection gaps: unsupported browser capability, missing permission, late injection, restricted URL, quota pressure, and collector shutdown.                                                                                            |
+| FR-10 | A finding shall include stable rule ID/version, severity, confidence, evidence IDs, explanation template parameters, and supersession status. A finding with no evidence IDs shall not render.                                                                             |
+| FR-11 | The risk engine shall calculate independent category posture values and a confidence/coverage value. It shall not output `safe`, `malicious`, or a probability of compromise.                                                                                              |
+| FR-12 | Search and filtering shall execute locally over the selected session; full-text indexes shall exclude sensitive fields by schema, not by UI convention.                                                                                                                    |
+| FR-13 | Data deletion shall support session, site, and all-local-data scopes and shall delete associated events, findings, artifacts, indexes, and AI drafts.                                                                                                                      |
+| FR-14 | Export shall pass a redaction transform, validate against an export schema, and show a deterministic data preview.                                                                                                                                                         |
+| FR-15 | Remote enrichment and AI shall be disabled by default, separately consented, cancellable, and supplied only a versioned redacted bundle.                                                                                                                                   |
+| FR-16 | A remote answer shall identify the evidence IDs it used. It shall be labelled generated analysis and be stored separately from primary evidence.                                                                                                                           |
+| FR-17 | The system shall not execute remotely retrieved code, rule expressions, plugin code, or model-provided instructions.                                                                                                                                                       |
+| FR-18 | The system shall require an explicit Investigation descriptor: scope, selected tab IDs/origins, capabilities, started/ended timestamps, retention, and rule-pack versions. It shall not widen scope after start.                                                           |
+| FR-19 | The system shall write an append-only event envelope before any derived finding, aggregate, graph edge, report, or AI bundle references it. Derived artifacts shall retain input event IDs and algorithm/rule versions.                                                    |
+| FR-20 | The system shall classify every event as `direct`, `instrumented`, `derived`, or `user-annotated`; source completeness and late-start status shall be visible in the event and session coverage model.                                                                     |
+| FR-21 | The system shall maintain a causality graph as derived, typed edges with a basis (`direct-reference`, `temporal-correlation`, `rule-inference`, or `user-link`). It shall not represent temporal adjacency as causation.                                                   |
+| FR-22 | The system shall implement replay as a pure read operation over a frozen investigation snapshot. Replay shall make no page, browser, provider, or AI network request.                                                                                                      |
+| FR-23 | Built-in analyzer modules shall consume normalized event batches and return schema-validated observations/finding candidates. They shall have no access to browser APIs, UI stores, raw page objects, or direct persistence.                                               |
+| FR-24 | The system shall create a `coverage_gap` event whenever a source was unavailable, permission was denied/revoked, a document was late-attached, sampling/overflow occurred, or a browser API does not support requested visibility.                                         |
 
 ## 3. Non-functional requirements
 
@@ -68,11 +68,11 @@ Inputs from a page, browser event APIs, optional feeds, and AI providers are unt
 
 ## 4. Verification matrix
 
-| Test layer | Required evidence |
-|---|---|
-| Unit (Vitest) | Canonicalization, redaction, rule evaluation, score bounds, schema rejection, retention, export serialization. |
-| Integration | Service-worker restart recovery, permissions revoked mid-scan, redirect chains, duplicate events, quota overflow, malformed page messages. |
-| Browser E2E (Playwright) | Chrome/Edge manual scan, denied/granted optional permissions, restricted-page state, accessibility keyboard flow, deletion/export. |
-| Security | Prototype-pollution/fuzz tests at message boundaries; static dependency/license audit; CSP/manifest review. |
-| Performance | Representative page corpus, synthetic 10k-event stream, long-lived SPA navigation, memory and CPU budgets. |
-| Manual compatibility | Brave Shields interaction, Opera build smoke, Firefox capability downgrade/wording. |
+| Test layer               | Required evidence                                                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Unit (Vitest)            | Canonicalization, redaction, rule evaluation, score bounds, schema rejection, retention, export serialization.                             |
+| Integration              | Service-worker restart recovery, permissions revoked mid-scan, redirect chains, duplicate events, quota overflow, malformed page messages. |
+| Browser E2E (Playwright) | Chrome/Edge manual scan, denied/granted optional permissions, restricted-page state, accessibility keyboard flow, deletion/export.         |
+| Security                 | Prototype-pollution/fuzz tests at message boundaries; static dependency/license audit; CSP/manifest review.                                |
+| Performance              | Representative page corpus, synthetic 10k-event stream, long-lived SPA navigation, memory and CPU budgets.                                 |
+| Manual compatibility     | Brave Shields interaction, Opera build smoke, Firefox capability downgrade/wording.                                                        |

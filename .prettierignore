@@ -1,0 +1,7 @@
+.output/
+.wxt/
+coverage/
+packages/*/dist/
+node_modules/
+playwright-report/
+pnpm-lock.yaml

@@ -18,14 +18,14 @@ The service worker is the authority for sessions, capability state, normalizatio
 
 ## 2. Extension contexts
 
-| Context | Responsibilities | Must not do |
-|---|---|---|
-| Service worker | permission orchestration, webRequest/cookie listeners, session state machine, event batching, rules, DB transactions, remote request broker | retain authoritative state only in globals; parse page HTML; render UI |
-| Isolated content observer | DOM metadata, navigation/frame lifecycle, safe bridge to probe | inspect/retain content values; expose extension APIs to page |
-| Main-world probe | best-effort hooks for selected APIs after deep-scan start | hold secrets; trust page objects; provide a general message/RPC endpoint |
-| Popup | status, quick posture, Scan button, capability education | render unbounded event data |
-| Side panel / tab fallback | session detail, timeline, search, export, data controls | decide rules or handle privileged browser events |
-| Offscreen document (only if needed) | worker-hosted computation incompatible with SW only after a measured need | keep a permanent background loop |
+| Context                             | Responsibilities                                                                                                                            | Must not do                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Service worker                      | permission orchestration, webRequest/cookie listeners, session state machine, event batching, rules, DB transactions, remote request broker | retain authoritative state only in globals; parse page HTML; render UI   |
+| Isolated content observer           | DOM metadata, navigation/frame lifecycle, safe bridge to probe                                                                              | inspect/retain content values; expose extension APIs to page             |
+| Main-world probe                    | best-effort hooks for selected APIs after deep-scan start                                                                                   | hold secrets; trust page objects; provide a general message/RPC endpoint |
+| Popup                               | status, quick posture, Scan button, capability education                                                                                    | render unbounded event data                                              |
+| Side panel / tab fallback           | session detail, timeline, search, export, data controls                                                                                     | decide rules or handle privileged browser events                         |
+| Offscreen document (only if needed) | worker-hosted computation incompatible with SW only after a measured need                                                                   | keep a permanent background loop                                         |
 
 `chrome.debugger` is deliberately outside the core data flow. It may become an Advanced capability adapter only after dedicated UX and platform review. The API attaches a DevTools Protocol client to a tab and requires the `debugger` permission; it is therefore materially more sensitive than passive metadata collection. [Chrome debugger](https://developer.chrome.com/docs/extensions/reference/api/debugger)
 

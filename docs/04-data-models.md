@@ -4,21 +4,21 @@
 
 Database: `browserscope-v1` in IndexedDB. Encryption at rest is provided by the OS/browser profile; BrowserScope must not claim additional cryptographic protection. Secrets are excluded rather than “encrypted later.”
 
-| Store | Key | Important fields / indexes | Retention |
-|---|---|---|---|
-| `sessions` | `sessionId` | tab/document/origin, state, capability snapshot, start/end, coverage | policy-bound |
-| `events` | `[sessionId, sequence]` | kind, source, monotonic time, wall time, domain, frame, privacy class, payload | policy-bound |
-| `findings` | `findingId` | session, rule/version, severity, confidence, status, evidence IDs | policy-bound |
-| `artifacts` | `artifactId` | hashed script identity, normalized header/security facts, source reference | policy-bound |
-| `requestState` | `[sessionId, requestId]` | transient redirect/lifecycle join state | delete on terminal/freeze |
-| `aggregates` | `sessionId` | domain counts, category posture, timeline buckets, coverage | policy-bound |
-| `preferences` | key | retention, grants, theme, redaction, providers | until changed |
-| `rulePacks` | `[packId, version]` | signed data, verification/status | until removed |
-| `exports` | exportId | manifest only; no duplicate event copy | 24h max |
-| `investigations` | `investigationId` | immutable scope descriptor, recorder state, clock/coverage manifest, ledger root | policy-bound |
-| `graphNodes` | `[investigationId, nodeId]` | typed entity projection, first/last evidence IDs, safe label | regenerated |
-| `graphEdges` | `[investigationId, edgeId]` | typed relationship, source/target, basis, confidence, evidence IDs | regenerated |
-| `annotations` | `annotationId` | user pin/bookmark/comment, target event/node/edge, created time | policy-bound |
+| Store            | Key                         | Important fields / indexes                                                       | Retention                 |
+| ---------------- | --------------------------- | -------------------------------------------------------------------------------- | ------------------------- |
+| `sessions`       | `sessionId`                 | tab/document/origin, state, capability snapshot, start/end, coverage             | policy-bound              |
+| `events`         | `[sessionId, sequence]`     | kind, source, monotonic time, wall time, domain, frame, privacy class, payload   | policy-bound              |
+| `findings`       | `findingId`                 | session, rule/version, severity, confidence, status, evidence IDs                | policy-bound              |
+| `artifacts`      | `artifactId`                | hashed script identity, normalized header/security facts, source reference       | policy-bound              |
+| `requestState`   | `[sessionId, requestId]`    | transient redirect/lifecycle join state                                          | delete on terminal/freeze |
+| `aggregates`     | `sessionId`                 | domain counts, category posture, timeline buckets, coverage                      | policy-bound              |
+| `preferences`    | key                         | retention, grants, theme, redaction, providers                                   | until changed             |
+| `rulePacks`      | `[packId, version]`         | signed data, verification/status                                                 | until removed             |
+| `exports`        | exportId                    | manifest only; no duplicate event copy                                           | 24h max                   |
+| `investigations` | `investigationId`           | immutable scope descriptor, recorder state, clock/coverage manifest, ledger root | policy-bound              |
+| `graphNodes`     | `[investigationId, nodeId]` | typed entity projection, first/last evidence IDs, safe label                     | regenerated               |
+| `graphEdges`     | `[investigationId, edgeId]` | typed relationship, source/target, basis, confidence, evidence IDs               | regenerated               |
+| `annotations`    | `annotationId`              | user pin/bookmark/comment, target event/node/edge, created time                  | policy-bound              |
 
 Migrations are append-only and transactional. A failed migration leaves the prior DB untouched and disables collection with a recoverable diagnostic; it never drops user data automatically.
 
@@ -66,16 +66,16 @@ EventEnvelope = {
 
 Event kinds are intentionally behavioural, not raw logs:
 
-| Family | Kinds |
-|---|---|
-| System | `session_started`, `permission_changed`, `coverage_gap`, `collector_overflow`, `session_frozen` |
-| Investigation | `investigation_armed`, `recording_started`, `recording_paused`, `recording_resumed`, `recording_stopped`, `integrity_verified` |
+| Family          | Kinds                                                                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| System          | `session_started`, `permission_changed`, `coverage_gap`, `collector_overflow`, `session_frozen`                                                                  |
+| Investigation   | `investigation_armed`, `recording_started`, `recording_paused`, `recording_resumed`, `recording_stopped`, `integrity_verified`                                   |
 | Browser context | `tab_created`, `tab_closed`, `tab_activated`, `navigation_started`, `navigation_committed`, `navigation_completed`, `navigation_failed`, `history_state_updated` |
-| Document | `document_loaded`, `security_headers_observed`, `csp_policy_observed`, `iframe_observed`, `form_metadata_observed`, `script_resource_observed` |
-| Network | `request_started`, `request_redirected`, `response_headers_observed`, `request_completed`, `request_failed`, `connection_opened` |
-| Storage | `cookie_metadata_observed`, `cookie_changed`, `web_storage_key_changed`, `indexeddb_metadata_observed`, `cache_metadata_observed` |
-| Runtime | `dom_mutation_summary`, `api_invoked`, `worker_created`, `service_worker_registered`, `download_initiated`, `permission_api_queried` |
-| Analysis | `finding_created`, `finding_resolved`, `posture_recomputed`, `ai_bundle_created`, `ai_answer_received` |
+| Document        | `document_loaded`, `security_headers_observed`, `csp_policy_observed`, `iframe_observed`, `form_metadata_observed`, `script_resource_observed`                   |
+| Network         | `request_started`, `request_redirected`, `response_headers_observed`, `request_completed`, `request_failed`, `connection_opened`                                 |
+| Storage         | `cookie_metadata_observed`, `cookie_changed`, `web_storage_key_changed`, `indexeddb_metadata_observed`, `cache_metadata_observed`                                |
+| Runtime         | `dom_mutation_summary`, `api_invoked`, `worker_created`, `service_worker_registered`, `download_initiated`, `permission_api_queried`                             |
+| Analysis        | `finding_created`, `finding_resolved`, `posture_recomputed`, `ai_bundle_created`, `ai_answer_received`                                                           |
 
 `api_invoked` carries an enum such as `clipboard_read`, `geolocation_get_current_position`, `notification_request_permission`, `window_open`, `webassembly_instantiate`, or `webgl_context`. It never carries arguments, return values, stack traces, text, or binary data.
 
@@ -83,12 +83,12 @@ Event kinds are intentionally behavioural, not raw logs:
 
 No event name implies unsupported observation. Each kind declares one of four support classes:
 
-| Class | Meaning | Example |
-|---|---|---|
-| `BROWSER_DIRECT` | Browser API reports the fact for selected scope | navigation committed; network redirect; cookie metadata change |
-| `DOCUMENT_DIRECT` | Permitted content observer reads document lifecycle/structure | DOMContentLoaded; iframe element added |
-| `PROBE_BEST_EFFORT` | Main-world hook sees an API invocation after injection | `navigator.clipboard.readText` invocation |
-| `DERIVED_PATTERN` | Analyzer joins evidence; it is not an independent event | likely OAuth redirect sequence; fingerprinting pattern |
+| Class               | Meaning                                                       | Example                                                        |
+| ------------------- | ------------------------------------------------------------- | -------------------------------------------------------------- |
+| `BROWSER_DIRECT`    | Browser API reports the fact for selected scope               | navigation committed; network redirect; cookie metadata change |
+| `DOCUMENT_DIRECT`   | Permitted content observer reads document lifecycle/structure | DOMContentLoaded; iframe element added                         |
+| `PROBE_BEST_EFFORT` | Main-world hook sees an API invocation after injection        | `navigator.clipboard.readText` invocation                      |
+| `DERIVED_PATTERN`   | Analyzer joins evidence; it is not an independent event       | likely OAuth redirect sequence; fingerprinting pattern         |
 
 The event details panel renders the support class, collector, capability needed, start-time coverage, and known blind spots. A missing `PROBE_BEST_EFFORT` event is never a negative signal.
 
@@ -144,15 +144,15 @@ The UI leads with category cards and says, for example, “Privacy posture: 58 /
 
 ### Inputs and safeguards
 
-| Signal | Example contribution | Safeguard |
-|---|---|---|
-| HTTPS observed | modest positive transport fact | never call it a valid certificate verdict |
-| Effective CSP has restrictive script sources | positive policy fact | account for report-only/meta vs header; no blanket CSP bonus |
-| Mixed content response | substantial negative transport fact | direct browser evidence required |
-| Third-party count/domain diversity | neutral-to-caution privacy context | no penalty for known payment/identity provider alone |
-| API call after deep-scan start | contextual runtime fact | absence is not a positive; invocation is not malicious intent |
-| Multi-signal fingerprinting pattern | caution | requires ≥3 independent direct signals + temporal correlation |
-| Named threat feed match | critical alert | optional provider, feed/source/time must be shown; expired feed cannot alert |
+| Signal                                       | Example contribution                | Safeguard                                                                    |
+| -------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| HTTPS observed                               | modest positive transport fact      | never call it a valid certificate verdict                                    |
+| Effective CSP has restrictive script sources | positive policy fact                | account for report-only/meta vs header; no blanket CSP bonus                 |
+| Mixed content response                       | substantial negative transport fact | direct browser evidence required                                             |
+| Third-party count/domain diversity           | neutral-to-caution privacy context  | no penalty for known payment/identity provider alone                         |
+| API call after deep-scan start               | contextual runtime fact             | absence is not a positive; invocation is not malicious intent                |
+| Multi-signal fingerprinting pattern          | caution                             | requires ≥3 independent direct signals + temporal correlation                |
+| Named threat feed match                      | critical alert                      | optional provider, feed/source/time must be shown; expired feed cannot alert |
 
 Weights are versioned data reviewed by security and UX. They have reason codes, test fixtures, min/max impact, and an expiry date. Rules cannot change category weights outside predeclared bounds. An explanation names the signal and may state uncertainty; it must not assign motive.
 

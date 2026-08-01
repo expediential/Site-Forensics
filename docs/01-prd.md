@@ -63,32 +63,32 @@ The user enables AI, sees the redacted evidence bundle, provider, retention stat
 
 ## MVP requirements
 
-| ID | Requirement | Priority | Acceptance outcome |
-|---|---|---|---|
-| PRD-01 | Per-tab manual scan sessions | Must | A session has a clear start, stop, status, scope, and discard control. |
-| PRD-02 | Passive posture collection | Must | With appropriate site access, collect document URL/origin, top-level HTTPS state, response security headers, script/iframe/link metadata, and network counts within budgets. |
-| PRD-03 | Evidence-led findings | Must | Every surfaced finding links to immutable evidence IDs and a human-readable limitation. |
-| PRD-04 | Network and third-party summary | Must | Group requests by registrable domain/resource type; show redirects, status class, and bytes when observable. |
-| PRD-05 | Cookie metadata panel | Should | On consent, show attributes but never cookie values. |
-| PRD-06 | Runtime event panel | Should | Deep scan observes bounded DOM mutations and selected API-use events from scan start. |
-| PRD-07 | Timeline/search | Must | Search works over event text, type, domain, finding, and time range without sending data off-device. |
-| PRD-08 | Explainable posture | Must | No binary “safe”; category scores explain weights and uncertainty. |
-| PRD-09 | Data controls and export | Must | Local retention, deletion, redacted JSON export, and AI/enrichment disclosure are available. |
-| PRD-10 | Accessibility/theme | Must | Keyboard operation, reduced-motion support, AA contrast, dark/light/system themes. |
-| PRD-11 | Investigation recorder | Must | Start/stop produces a scoped event ledger, coverage report, derived timeline and graph, and local report. |
-| PRD-12 | Evidence replay | Should | A deterministic cursor replays stored events and projections without network/page execution. |
-| PRD-13 | Analyzer modules | Must | Built-in analyzers emit structured candidates/findings only; no analyzer writes UI state. |
+| ID     | Requirement                     | Priority | Acceptance outcome                                                                                                                                                           |
+| ------ | ------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PRD-01 | Per-tab manual scan sessions    | Must     | A session has a clear start, stop, status, scope, and discard control.                                                                                                       |
+| PRD-02 | Passive posture collection      | Must     | With appropriate site access, collect document URL/origin, top-level HTTPS state, response security headers, script/iframe/link metadata, and network counts within budgets. |
+| PRD-03 | Evidence-led findings           | Must     | Every surfaced finding links to immutable evidence IDs and a human-readable limitation.                                                                                      |
+| PRD-04 | Network and third-party summary | Must     | Group requests by registrable domain/resource type; show redirects, status class, and bytes when observable.                                                                 |
+| PRD-05 | Cookie metadata panel           | Should   | On consent, show attributes but never cookie values.                                                                                                                         |
+| PRD-06 | Runtime event panel             | Should   | Deep scan observes bounded DOM mutations and selected API-use events from scan start.                                                                                        |
+| PRD-07 | Timeline/search                 | Must     | Search works over event text, type, domain, finding, and time range without sending data off-device.                                                                         |
+| PRD-08 | Explainable posture             | Must     | No binary “safe”; category scores explain weights and uncertainty.                                                                                                           |
+| PRD-09 | Data controls and export        | Must     | Local retention, deletion, redacted JSON export, and AI/enrichment disclosure are available.                                                                                 |
+| PRD-10 | Accessibility/theme             | Must     | Keyboard operation, reduced-motion support, AA contrast, dark/light/system themes.                                                                                           |
+| PRD-11 | Investigation recorder          | Must     | Start/stop produces a scoped event ledger, coverage report, derived timeline and graph, and local report.                                                                    |
+| PRD-12 | Evidence replay                 | Should   | A deterministic cursor replays stored events and projections without network/page execution.                                                                                 |
+| PRD-13 | Analyzer modules                | Must     | Built-in analyzers emit structured candidates/findings only; no analyzer writes UI state.                                                                                    |
 
 ## Success measures and guardrails
 
-| Measure | Target | Guardrail |
-|---|---|---|
-| Scan start to usable summary | < 1.5 s on a median page | Never block page loading. |
-| Passive overhead | < 1% CPU averaged over 30 s on test corpus | Stop/degrade collector when budget exceeds threshold. |
-| Evidence coverage | 100% of findings reference evidence | Findings without evidence are discarded. |
-| Sensitive-data exports | 0 by default | Automated redaction tests must pass. |
-| Permission conversion | measured locally/opt-in telemetry only | No dark patterns or bundled all-sites grant. |
-| False certainty | 0 “safe/clean/valid” safety claims | Copy review gate. |
+| Measure                      | Target                                     | Guardrail                                             |
+| ---------------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Scan start to usable summary | < 1.5 s on a median page                   | Never block page loading.                             |
+| Passive overhead             | < 1% CPU averaged over 30 s on test corpus | Stop/degrade collector when budget exceeds threshold. |
+| Evidence coverage            | 100% of findings reference evidence        | Findings without evidence are discarded.              |
+| Sensitive-data exports       | 0 by default                               | Automated redaction tests must pass.                  |
+| Permission conversion        | measured locally/opt-in telemetry only     | No dark patterns or bundled all-sites grant.          |
+| False certainty              | 0 “safe/clean/valid” safety claims         | Copy review gate.                                     |
 
 ## Release criteria
 
