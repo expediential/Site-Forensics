@@ -5,7 +5,7 @@ export type JsonPrimitive = boolean | null | number | string;
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 /** A JSON-compatible array. */
-export type JsonArray = JsonValue[];
+export type JsonArray = readonly JsonValue[];
 
 /** A JSON-compatible object. */
 export interface JsonObject {

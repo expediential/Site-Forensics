@@ -21,6 +21,10 @@
     "./utilities": {
       "types": "./dist/utilities/index.d.ts",
       "import": "./dist/utilities/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./dist/events/index.js"
     }
   },
   "files": [
@@ -36,5 +40,8 @@
   "devDependencies": {
     "typescript": "6.0.3",
     "vitest": "4.1.10"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.2.0"
   }
 }
