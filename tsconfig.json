@@ -33,6 +33,7 @@
     "scripts",
     "wxt.config.ts",
     "vitest.config.ts",
+    "vitest.integration.config.ts",
     "playwright.config.ts",
     ".wxt/wxt.d.ts"
   ]

@@ -23,11 +23,11 @@
     "lint": "eslint . --max-warnings=0",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "typecheck": "pnpm prepare:wxt && tsc -p tsconfig.json --noEmit && pnpm --filter @browserscope/sdk typecheck",
+    "typecheck": "pnpm prepare:wxt && pnpm --filter @browserscope/sdk build && tsc -p tsconfig.json --noEmit && pnpm --filter @browserscope/sdk typecheck",
     "test": "pnpm test:unit && pnpm --filter @browserscope/sdk test",
-    "test:unit": "vitest run",
+    "test:unit": "pnpm --filter @browserscope/sdk build && vitest run",
     "test:unit:watch": "vitest",
-    "test:integration": "pnpm build:chrome && node scripts/verify-extension-output.mjs",
+    "test:integration": "pnpm --filter @browserscope/sdk build && vitest run --config vitest.integration.config.ts && pnpm build:chrome && node scripts/verify-extension-output.mjs",
     "test:e2e": "pnpm build:chrome && playwright test",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration"
   },
@@ -39,6 +39,8 @@
     "*.{json,md,yml,yaml,css}": "prettier --write"
   },
   "dependencies": {
+    "@browserscope/sdk": "workspace:*",
+    "@noble/hashes": "2.2.0",
     "@wxt-dev/module-react": "1.2.2",
     "clsx": "2.1.1",
     "react": "19.2.8",
@@ -56,6 +58,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.3",
+    "fake-indexeddb": "6.2.5",
     "globals": "17.8.0",
     "husky": "9.1.7",
     "lint-staged": "17.2.0",
