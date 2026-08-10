@@ -12,7 +12,7 @@ export default defineConfig({
     action: {
       default_title: 'BrowserScope',
     },
-    permissions: ['storage'],
+    permissions: ['activeTab', 'storage', 'webRequest'],
     ...(browser === 'firefox'
       ? {
           browser_specific_settings: {
